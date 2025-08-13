@@ -1,0 +1,422 @@
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Home,
+  Building2,
+  MapPin,
+  Plane,
+  Percent,
+  ShieldCheck,
+  ClipboardList,
+  Calculator,
+  Users,
+  HeartHandshake,
+  Phone,
+  ChevronDown,
+  ArrowRight,
+  PlayCircle,
+  Newspaper,
+  MessageSquareText,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+
+// --- helpers ---
+const Section = ({ id, title, hint, children }: any) => (
+  <section id={id} className="scroll-mt-24 py-12 md:py-16">
+    <div className="mx-auto max-w-7xl px-4">
+      <div className="mb-8 md:mb-10">
+        <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{title}</h2>
+        {hint && <p className="text-muted-foreground mt-2 max-w-2xl">{hint}</p>}
+      </div>
+      {children}
+    </div>
+  </section>
+);
+
+const Feature = ({ Icon, title, text, cta }: any) => (
+  <Card className="h-full">
+    <CardHeader className="space-y-3">
+      <div className="inline-flex size-11 items-center justify-center rounded-2xl bg-primary/10">
+        <Icon className="size-5" />
+      </div>
+      <CardTitle className="text-lg">{title}</CardTitle>
+      <CardDescription>{text}</CardDescription>
+    </CardHeader>
+    {cta && <CardContent>{cta}</CardContent>}
+  </Card>
+);
+
+const Stat = ({ value, label }: any) => (
+  <div className="text-center">
+    <div className="text-3xl md:text-4xl font-bold">{value}</div>
+    <div className="text-sm text-muted-foreground">{label}</div>
+  </div>
+);
+
+function MortgageMiniCalc() {
+  const [price, setPrice] = React.useState(12000000);
+  const [down, setDown] = React.useState(2400000);
+  const [rate, setRate] = React.useState(6);
+  const [years, setYears] = React.useState(20);
+
+  const principal = Math.max(price - down, 0);
+  const n = years * 12;
+  const i = rate / 100 / 12;
+  const payment = i === 0 ? principal / n : principal * (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Calculator className="size-5"/> Калькулятор семейной ипотеки</CardTitle>
+        <CardDescription>Черновая оценка ежемесячного платежа. Точный расчёт — на консультации.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm text-muted-foreground">Стоимость, ₽</label>
+            <Input type="number" value={price} onChange={(e:any)=>setPrice(Number(e.target.value))} />
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Первоначальный взнос, ₽</label>
+            <Input type="number" value={down} onChange={(e:any)=>setDown(Number(e.target.value))} />
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Ставка, %</label>
+            <Input type="number" step="0.1" value={rate} onChange={(e:any)=>setRate(Number(e.target.value))} />
+          </div>
+          <div>
+            <label className="text-sm text-muted-foreground">Срок, лет</label>
+            <Input type="number" value={years} onChange={(e:any)=>setYears(Number(e.target.value))} />
+          </div>
+        </div>
+        <div className="rounded-xl bg-muted p-4">
+          <div className="text-sm text-muted-foreground">Ежемесячный платёж, ₽</div>
+          <div className="text-2xl md:text-3xl font-semibold">{Math.round(payment).toLocaleString("ru-RU")}</div>
+        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full md:w-auto">Получить точный расчёт</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Заявка на расчёт</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <Input placeholder="Имя" />
+              <Input placeholder="Телефон" />
+              <Textarea placeholder="Опишите ситуацию: дети, доход, регион" />
+              <Button>Отправить</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
+}
+
+function Hero() {
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-b from-background to-muted">
+      <div className="mx-auto max-w-7xl px-4 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <Badge className="mb-4" variant="secondary">Для семей 28–50 • Новостройки СПб • Релокация</Badge>
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+              Помогаем семье выбрать и купить <span className="text-primary">новостройку в Санкт‑Петербурге</span>
+              <br/>без лишних расходов и стресса
+            </h1>
+            <p className="mt-4 text-muted-foreground max-w-xl">
+              Бесплатный тур по новостройкам (перелёт+проживание), прозрачная ипотека до 6% и честная консультация по самостоятельной продаже вашего жилья.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button size="lg" className="gap-2"><PlayCircle className="size-5"/> Записаться на видеотур</Button>
+              <Button size="lg" variant="outline" className="gap-2"><Plane className="size-5"/> Бронировать тур в СПб</Button>
+            </div>
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              <Stat value="6%" label="семейная ипотека"/>
+              <Stat value="50+" label="партнёров‑застройщиков"/>
+              <Stat value="24/7" label="сопровождение сделки"/>
+            </div>
+          </div>
+          <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{duration:0.6}}>
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><MapPin className="size-5"/> Быстрый подбор районов</CardTitle>
+                <CardDescription>Выберите, что важнее для вашей семьи — мы подскажем районы и ЖК.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="secondary" className="justify-start gap-2"><Users className="size-4"/> Сады и школы</Button>
+                  <Button variant="secondary" className="justify-start gap-2"><Building2 className="size-4"/> Новые ЖК</Button>
+                  <Button variant="secondary" className="justify-start gap-2"><ShieldCheck className="size-4"/> Безопасность</Button>
+                  <Button variant="secondary" className="justify-start gap-2"><Percent className="size-4"/> Акции и скидки</Button>
+                </div>
+                <div className="rounded-xl bg-muted p-3 text-sm text-muted-foreground">
+                  Подсказка: часто семьи выбирают Приморский, Московский и Красносельский районы.
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuickServices() {
+  const items = [
+    { Icon: Building2, title: "Новостройки СПб", text: "Каталог, акции, видеотуры и бронирование визита." },
+    { Icon: Home, title: "Вторичка Мурманск", text: "Продажа/покупка, гайд по самостоятельной продаже." },
+    { Icon: Plane, title: "Релокация и туры", text: "Перелёт+проживание за наш счёт при выборе жилья." },
+    { Icon: Calculator, title: "Ипотека и льготы", text: "Сравнение банков, семейная ипотека, субсидии." },
+    { Icon: HeartHandshake, title: "Доверительное управление", text: "Сдача в аренду, отчёты, обслуживание." },
+    { Icon: Newspaper, title: "Блог и аналитика", text: "Обзоры районов, кейсы, советы родителям." },
+  ];
+  return (
+    <Section id="services" title="Чем поможем" hint="Комплексный сервис под ключ — от подбора до новоселья и управления объектом.">
+      <div className="grid md:grid-cols-3 gap-4">
+        {items.map((it, i)=> (
+          <Feature key={i} Icon={it.Icon} title={it.title} text={it.text} />
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function CatalogShowcase() {
+  return (
+    <Section id="catalog" title="Витрина объектов" hint="Пример визуализации карточек каталога.">
+      <Tabs defaultValue="spb">
+        <TabsList className="mb-4">
+          <TabsTrigger value="spb">Новостройки СПб</TabsTrigger>
+          <TabsTrigger value="mur">Вторичка Мурманска</TabsTrigger>
+        </TabsList>
+        <TabsContent value="spb">
+          <div className="grid md:grid-cols-3 gap-4">
+            {[1,2,3].map((n)=> (
+              <Card key={n} className="overflow-hidden">
+                <div className="aspect-video bg-muted" />
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>ЖК «Северный берег»</CardTitle>
+                    <Badge variant="secondary">Сдача Q4 2026</Badge>
+                  </div>
+                  <CardDescription>Приморский р-н • от 10,9 млн ₽ • семейная ипотека</CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center gap-3">
+                  <Button className="gap-2" size="sm"><PlayCircle className="size-4"/> Видеотур</Button>
+                  <Button variant="outline" size="sm" className="gap-2">Подробнее <ArrowRight className="size-4"/></Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="mur">
+          <div className="grid md:grid-cols-3 gap-4">
+            {[1,2,3].map((n)=> (
+              <Card key={n} className="overflow-hidden">
+                <div className="aspect-video bg-muted" />
+                <CardHeader>
+                  <CardTitle>2‑к квартира, 56 м²</CardTitle>
+                  <CardDescription>Центральный • 5/9 • 7,4 млн ₽</CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center gap-3">
+                  <Button size="sm">Записаться на просмотр</Button>
+                  <Button variant="outline" size="sm">Сохранить</Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </Section>
+  );
+}
+
+function RelocationSteps() {
+  const steps = [
+    {title: "Диагностика", text: "Разбираем бюджет, семейную ипотеку, пожелания к району."},
+    {title: "Шорт‑лист ЖК", text: "3–5 вариантов под ваш сценарий (садики, школы, транспорт)."},
+    {title: "Видеотуры/тур", text: "Покажем онлайн или организуем выезд: перелёт+проживание."},
+    {title: "Сделка", text: "Дистанционные документы, ДДУ/эскроу, ключи — без стресса."},
+  ];
+  return (
+    <Section id="relocation" title="Релокация под ключ" hint="Понятный путь от идеи до новоселья.">
+      <div className="grid md:grid-cols-4 gap-4">
+        {steps.map((s, i)=> (
+          <Card key={i}>
+            <CardHeader>
+              <div className="text-xs text-muted-foreground">Шаг {i+1}</div>
+              <CardTitle>{s.title}</CardTitle>
+              <CardDescription>{s.text}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function Sitemap() {
+  const tree = [
+    { name: "Главная", icon: Home, children: [
+      { name: "Новостройки СПб", icon: Building2, children:[{name:"Каталог"},{name:"Районы"},{name:"Акции"}] },
+      { name: "Вторичка Мурманска", icon: Home, children:[{name:"Каталог"},{name:"Гайд по продаже"}] },
+      { name: "Релокация и туры", icon: Plane, children:[{name:"Сервис переезда"},{name:"Запись на тур"}] },
+      { name: "Ипотека и льготы", icon: Percent, children:[{name:"Калькулятор"},{name:"Банки‑партнёры"}] },
+      { name: "Доверительное управление", icon: HeartHandshake, children:[{name:"Аренда"},{name:"Отчёты"}] },
+      { name: "Кейсы и отзывы", icon: MessageSquareText },
+      { name: "Блог", icon: Newspaper },
+      { name: "О компании", icon: ShieldCheck, children:[{name:"Команда"},{name:"Ценности"},{name:"Партнёры"}] },
+      { name: "Контакты", icon: Phone }
+    ]}
+  ];
+
+  const Node = ({ node, depth=0 }: any) => {
+    const [open, setOpen] = React.useState(true);
+    const Icon = (node.icon || Home);
+    const hasChildren = Array.isArray(node.children) && node.children.length>0;
+    return (
+      <div className={`rounded-xl ${depth===0?"bg-muted p-4":""}`}>
+        <button onClick={()=>setOpen(!open)} className="flex w-full items-center gap-2 py-2">
+          {hasChildren && <ChevronDown className={`size-4 transition-transform ${open?"rotate-0":"-rotate-90"}`} />}
+          <Icon className="size-4"/>
+          <span className="font-medium">{node.name}</span>
+        </button>
+        {hasChildren && open && (
+          <div className="pl-6 border-l mt-1 space-y-1">
+            {node.children.map((ch:any, i:number)=> <Node key={i} node={ch} depth={depth+1}/>) }
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Section id="sitemap" title="Карта разделов (sitemap)" hint="Наглядная структура сайта и ключевых страниц.">
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Дерево навигации</CardTitle>
+            <CardDescription>Разделы первого и второго уровня.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {tree.map((n,i)=> <Node key={i} node={n} />)}
+          </CardContent>
+        </Card>
+        <MortgageMiniCalc />
+      </div>
+    </Section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t">
+      <div className="mx-auto max-w-7xl px-4 py-8 md:py-10 grid md:grid-cols-4 gap-6 text-sm">
+        <div>
+          <div className="font-semibold">SREDA Недвижимости</div>
+          <p className="text-muted-foreground mt-2">Покупка новостроек в СПб, вторичка в Мурманске, релокация, ипотека, управление.</p>
+        </div>
+        <div>
+          <div className="font-medium mb-2">Контакты</div>
+          <ul className="space-y-1 text-muted-foreground">
+            <li>+7 (___) ___‑__‑__</li>
+            <li>hello@sreda.ru</li>
+            <li>СПб / Мурманск</li>
+          </ul>
+        </div>
+        <div>
+          <div className="font-medium mb-2">Полезное</div>
+          <ul className="space-y-1 text-muted-foreground">
+            <li>FAQ</li>
+            <li>Политика конфиденциальности</li>
+            <li>Пользовательское соглашение</li>
+          </ul>
+        </div>
+        <div className="flex items-start justify-start md:justify-end">
+          <Button className="gap-2"><Phone className="size-4"/> Получить консультацию</Button>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export default function Prototype() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* NAV */}
+      <div className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto max-w-7xl px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="size-8 rounded-xl bg-primary/10 flex items-center justify-center"><Building2 className="size-4"/></div>
+            <span className="font-semibold">SREDA Недвижимости</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            <a href="#services" className="hover:text-primary">Услуги</a>
+            <a href="#catalog" className="hover:text-primary">Каталог</a>
+            <a href="#relocation" className="hover:text-primary">Релокация</a>
+            <a href="#sitemap" className="hover:text-primary">Sitemap</a>
+            <a href="#contacts" className="hover:text-primary">Контакты</a>
+          </nav>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline">Войти</Button>
+            <Button size="sm">Оставить заявку</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* HERO */}
+      <Hero />
+
+      {/* SERVICES */}
+      <QuickServices />
+
+      {/* CATALOG */}
+      <CatalogShowcase />
+
+      {/* RELOCATION */}
+      <RelocationSteps />
+
+      {/* SITEMAP + CALC */}
+      <Sitemap />
+
+      {/* CONTACTS */}
+      <Section id="contacts" title="Связаться с нами" hint="Ответим в течение 15 минут в мессенджере или по телефону.">
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Быстрая заявка</CardTitle>
+              <CardDescription>Мы перезвоним и подскажем с чего начать.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Input placeholder="Имя"/>
+              <Input placeholder="Телефон"/>
+              <Textarea placeholder="Коротко: город, бюджет, дети, сроки"/>
+              <Button>Отправить</Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Офисы</CardTitle>
+              <CardDescription>Санкт‑Петербург и Мурманск. Принимаем по записи.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-xl bg-muted aspect-video mb-3" />
+              <div className="text-sm text-muted-foreground">Подключим видеозвонок, если вы в другом городе.</div>
+            </CardContent>
+          </Card>
+        </div>
+      </Section>
+
+      {/* FOOTER */}
+      <Footer />
+    </div>
+  );
+}
