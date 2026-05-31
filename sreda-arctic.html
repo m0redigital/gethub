@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>SREDA Arctic — туристическое приложение</title>
+<style>
+:root{
+  --blue:#4a7fa0;--blue-dark:#2f5f7a;--dark:#0f2133;--ink:#1a3147;
+  --muted:#6b7f8d;--bg:#eaf3f8;--card:rgba(255,255,255,.82);
+  --line:rgba(196,215,228,.9);--ice:rgba(232,244,251,.92);
+  --gold:#e8993a;--green:#3da464;--red:#d05855;
+  --glass-bg:rgba(255,255,255,.72);
+  --glass-border:rgba(255,255,255,.55);
+  --sh1:0 8px 28px rgba(15,33,51,.08);
+  --sh2:0 18px 48px rgba(15,33,51,.11);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(ellipse at 20% 0%,#e8f4fc 0%,#ddeef7 40%,#cce0ee 100%);
+  color:var(--dark);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── App shell ── */
+.app{max-width:520px;margin:0 auto;min-height:100vh;
+  background:linear-gradient(175deg,#f2f8fb 0%,#eaf2f7 55%,#e3eff5 100%);
+  position:relative;box-shadow:0 0 0 1px rgba(15,33,51,.04),0 32px 80px rgba(15,33,51,.12)}
+
+/* ── Header ── */
+.header{position:sticky;top:0;z-index:20;
+  background:rgba(242,249,253,.92);backdrop-filter:blur(22px) saturate(1.6);
+  -webkit-backdrop-filter:blur(22px) saturate(1.6);
+  border-bottom:1px solid rgba(196,215,228,.5);
+  padding:calc(14px + env(safe-area-inset-top)) 18px 13px}
+.topline{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;color:var(--muted);font-size:12px;font-weight:500;letter-spacing:.01em}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(145deg,#ffffff,#d8eaf4);
+  border:1.5px solid rgba(255,255,255,.9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 22px rgba(74,127,160,.15);
+  display:grid;place-items:center;font-weight:900;font-size:14px;letter-spacing:.06em;color:var(--blue)}
+.hd-title{font-size:24px;line-height:1;font-weight:900;letter-spacing:-.04em;color:var(--dark)}
+.hd-sub{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
+.status-pill{border:1px solid rgba(196,215,228,.8);background:rgba(255,255,255,.8);
+  border-radius:999px;padding:6px 11px;color:#2b6cb0;font-size:11.5px;font-weight:800;
+  white-space:nowrap;box-shadow:0 4px 14px rgba(74,127,160,.1)}
+
+/* ── Content & Cards ── */
+.content{padding:14px 15px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:26px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:var(--sh1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card h3{margin:0 0 8px;font-size:19px;line-height:1.1;letter-spacing:-.03em}
+.card p{margin:7px 0;color:var(--muted);font-size:13.5px;line-height:1.44}
+
+/* ── Hero card (dark) ── */
+.hero{background:linear-gradient(145deg,#1c3d55,#5d8fa8);border:0;color:#fff;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:200px;height:200px;
+  border:28px solid rgba(255,255,255,.1);border-radius:50%;right:-90px;top:-80px}
+.hero h3,.hero p,.hero .row{position:relative}
+.hero p{color:rgba(255,255,255,.84)}
+
+/* ── Home hero v15 ── */
+.home-screen{display:flex;flex-direction:column;gap:13px}
+
+.home-hero{position:relative;overflow:hidden;border-radius:28px;
+  padding:18px 17px 16px;min-height:290px;border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 20px 52px rgba(74,120,180,.22),inset 0 1px 0 rgba(255,255,255,.18);
+  background:
+    linear-gradient(190deg,rgba(10,38,90,.22) 0%,rgba(8,28,68,.08) 38%,transparent 56%),
+    radial-gradient(ellipse at 68% 10%,rgba(80,220,200,.62) 0%,transparent 22%),
+    radial-gradient(ellipse at 55% 18%,rgba(120,210,255,.55) 0%,transparent 26%),
+    radial-gradient(ellipse at 78% 6%,rgba(60,255,210,.38) 0%,transparent 14%),
+    radial-gradient(ellipse at 40% 14%,rgba(100,180,255,.42) 0%,transparent 20%),
+    linear-gradient(135deg,#1e5cbf 0%,#3a82d4 28%,#6aaae8 56%,#a8cff0 100%)}
+
+/* snow-glass bottom fade */
+.home-hero:before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 80% 95%,rgba(255,255,255,.28),transparent 36%),
+    linear-gradient(180deg,transparent 44%,rgba(210,232,248,.65) 75%,rgba(224,240,252,.92) 100%);
+  pointer-events:none;z-index:1}
+
+/* mountain silhouette layers */
+.mtn-far{position:absolute;left:0;right:0;bottom:0;height:52%;z-index:2;
+  background:linear-gradient(180deg,rgba(12,40,90,.0),rgba(12,38,86,.34) 38%,rgba(10,32,76,.72) 100%);
+  clip-path:polygon(
+    0 100%, 0 72%, 5% 64%, 10% 68%, 16% 52%, 22% 58%, 28% 40%,
+    33% 46%, 40% 28%, 45% 34%, 51% 18%, 57% 26%, 63% 12%,
+    68% 20%, 74% 8%, 80% 16%, 85% 6%, 90% 14%, 95% 4%,
+    100% 10%, 100% 100%)}
+.mtn-mid{position:absolute;left:0;right:0;bottom:0;height:40%;z-index:3;
+  background:linear-gradient(180deg,rgba(16,44,98,.0),rgba(15,41,94,.55) 28%,rgba(12,35,82,.88) 100%);
+  clip-path:polygon(
+    0 100%, 0 82%, 7% 70%, 13% 76%, 20% 60%, 26% 66%, 34% 50%,
+    40% 58%, 48% 38%, 54% 46%, 62% 30%, 68% 38%, 76% 22%,
+    82% 30%, 88% 18%, 94% 26%, 100% 15%, 100% 100%)}
+.mtn-near{position:absolute;left:0;right:0;bottom:0;height:26%;z-index:4;
+  background:linear-gradient(180deg,rgba(8,28,72,.18),rgba(8,26,66,.82) 32%,rgba(6,22,58,.98) 100%);
+  clip-path:polygon(
+    0 100%, 0 88%, 8% 76%, 15% 84%, 22% 68%, 30% 78%, 38% 60%,
+    45% 70%, 52% 52%, 58% 62%, 66% 44%, 72% 54%, 80% 38%,
+    86% 48%, 92% 35%, 97% 44%, 100% 32%, 100% 100%)}
+.mtn-snow{position:absolute;left:0;right:0;bottom:0;height:18%;z-index:5;
+  background:linear-gradient(180deg,rgba(200,225,248,.0),rgba(215,235,252,.28) 55%,rgba(224,240,255,.72) 100%);
+  clip-path:polygon(
+    0 100%, 0 92%, 8% 84%, 15% 90%, 22% 80%, 30% 88%, 38% 74%,
+    45% 82%, 52% 68%, 58% 76%, 66% 62%, 72% 72%, 80% 58%,
+    86% 68%, 92% 56%, 97% 66%, 100% 54%, 100% 100%)}
+
+.home-hero>*{position:relative;z-index:6}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;
+  color:rgba(255,255,255,.94);letter-spacing:.02em;width:max-content;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.home-hero h3{font-size:28px;line-height:1.02;margin:13px 0 9px;
+  letter-spacing:-.055em;color:#fff;max-width:300px;text-shadow:0 2px 12px rgba(10,30,80,.22)}
+.home-hero p{font-size:13px;line-height:1.44;color:rgba(255,255,255,.9);
+  max-width:288px;margin:0 0 0}
+.hero-btns{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:74px}
+.glass-btn{display:flex;align-items:center;gap:10px;padding:14px 13px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.3);background:rgba(230,244,255,.16);color:#fff;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 4px 16px rgba(10,28,80,.14);
+  cursor:pointer;text-align:left;transition:background .18s}
+.glass-btn:hover{background:rgba(230,244,255,.24)}
+.glass-btn .g-ico{width:32px;height:32px;display:grid;place-items:center;
+  border-radius:13px;background:rgba(255,255,255,.14);font-size:17px;flex:0 0 32px}
+.glass-btn b{display:block;font-size:14px;line-height:1.1;font-weight:800}
+.glass-btn span{display:block;font-size:11px;color:rgba(255,255,255,.82);margin-top:3px;line-height:1.2}
+
+/* ── KPI row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi-box{display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:13px 13px;box-shadow:var(--sh1);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);cursor:pointer;transition:transform .18s}
+.kpi-box:active{transform:scale(.97)}
+.kpi-box b{display:block;font-size:15.5px;font-weight:900;letter-spacing:-.03em;line-height:1.05;color:var(--dark)}
+.kpi-box span{display:block;font-size:10.5px;color:var(--muted);line-height:1.22;margin-top:5px}
+.kpi-ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(145deg,#eef6fc,#daeaf5);font-size:16px;
+  box-shadow:inset 0 1px 0 #fff,0 2px 8px rgba(74,127,160,.1)}
+
+/* ── Dashboard grid ── */
+.dash{display:grid;grid-template-columns:1.15fr .85fr;gap:10px}
+.plan-card{padding:16px;border-radius:26px}
+.plan-card h3{font-size:17px;margin:0 0 12px;letter-spacing:-.03em}
+
+/* Timeline */
+.timeline{position:relative;padding-left:21px}
+.timeline:before{content:"";position:absolute;left:7px;top:6px;bottom:8px;
+  width:2px;background:linear-gradient(180deg,var(--blue) 0%,var(--line) 100%);border-radius:2px;opacity:.5}
+.step{position:relative;margin-bottom:15px;cursor:pointer}
+.step:before{content:"";position:absolute;left:-19px;top:5px;
+  width:13px;height:13px;border-radius:50%;background:var(--blue);
+  box-shadow:0 0 0 4px rgba(74,127,160,.14),0 2px 6px rgba(74,127,160,.22)}
+.step.done:before{background:var(--green);box-shadow:0 0 0 4px rgba(61,164,100,.14)}
+.step.warn:before{background:var(--gold);box-shadow:0 0 0 4px rgba(232,153,58,.16)}
+.step b{display:block;font-size:13.5px;line-height:1.24;color:var(--dark);font-weight:700}
+.step span{display:block;color:var(--muted);font-size:11.5px;line-height:1.32;margin-top:2px}
+
+/* Stack panel */
+.stack{display:grid;gap:9px}
+.stack-card{display:flex;gap:10px;align-items:flex-start;padding:13px 13px;
+  border-radius:22px;cursor:pointer;transition:transform .18s}
+.stack-card:active{transform:scale(.97)}
+.stack-ico{width:34px;height:34px;border-radius:13px;
+  background:linear-gradient(145deg,#eef5fb,#ddeaf5);
+  display:grid;place-items:center;font-size:18px;flex:0 0 34px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.stack-card b{display:block;font-size:13.5px;font-weight:800;line-height:1.15;margin-top:1px;color:var(--dark)}
+.stack-card span{display:block;font-size:11px;color:var(--muted);line-height:1.3;margin-top:4px}
+
+/* ── Operator band ── */
+.op-band{display:flex;align-items:center;gap:12px;padding:14px 15px;border-radius:24px}
+.op-av{width:46px;height:46px;min-width:46px;border-radius:50%;
+  background:linear-gradient(145deg,#4a7fa0,#85b5cf);
+  display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 6px 16px rgba(74,127,160,.22)}
+.op-info{flex:1;min-width:0}
+.op-info b{display:block;font-size:14px;font-weight:800;color:var(--dark)}
+.op-info span{display:block;font-size:11.5px;color:var(--muted);line-height:1.28;margin-top:3px}
+.op-tail{display:flex;align-items:center;gap:9px}
+.op-icon{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(145deg,#f5fafd,#e0ecf5);
+  display:grid;place-items:center;color:#7ba6cc;font-size:17px;
+  box-shadow:inset 0 1px 0 #fff}
+.op-arrow{color:#9ab4c8;font-size:20px;font-weight:700}
+
+/* ── Section title ── */
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 10px}
+.sec-title h3{font-size:17px;font-weight:900;letter-spacing:-.03em;color:var(--dark)}
+.sec-title span{font-size:11.5px;color:var(--muted)}
+
+/* ── Shortcuts ── */
+.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.sc{padding:13px 10px 11px;border-radius:22px;text-align:center;cursor:pointer;
+  background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--sh1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:transform .18s}
+.sc:active{transform:scale(.96)}
+.sc .ico{width:34px;height:34px;border-radius:13px;margin:0 auto 9px;
+  background:linear-gradient(145deg,#ecf4fb,#dde9f5);
+  display:grid;place-items:center;font-size:17px;color:#5a96c4;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.sc b{display:block;font-size:12px;font-weight:800;line-height:1.15;color:var(--dark)}
+
+/* ── Weather ── */
+.weather{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.wx-card{padding:13px 12px;border-radius:22px;min-height:112px;position:relative;overflow:hidden;
+  background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--sh1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  cursor:pointer;transition:transform .18s}
+.wx-card:active{transform:scale(.97)}
+.wx-card:before{content:"";position:absolute;right:-14px;bottom:-16px;
+  width:72px;height:72px;border-radius:50%;
+  background:radial-gradient(circle,rgba(210,230,246,.45),rgba(200,222,240,.18))}
+.wx-ico{font-size:30px;position:absolute;right:10px;top:12px;opacity:.9}
+.wx-city{font-size:12.5px;font-weight:800;color:var(--dark);position:relative;z-index:1}
+.wx-temp{font-size:28px;font-weight:900;letter-spacing:-.06em;
+  color:var(--blue-dark);line-height:1;margin-top:7px;position:relative;z-index:1}
+.wx-feel{font-size:10.5px;color:var(--muted);line-height:1.24;margin-top:3px;position:relative;z-index:1}
+.wx-type{font-size:11.5px;color:var(--blue-dark);font-weight:700;margin-top:5px;position:relative;z-index:1}
+
+/* ── Bottom nav ── */
+.bottom{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:520px;
+  background:rgba(245,251,254,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(196,215,228,.7);
+  display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+  padding:8px 8px calc(10px + env(safe-area-inset-bottom));z-index:25}
+.tab{border:0;background:transparent;border-radius:14px;padding:7px 2px;
+  color:var(--muted);font-size:10px;line-height:1.1;cursor:pointer;transition:all .18s;font-weight:600}
+.tab.on{background:rgba(74,127,160,.1);color:var(--blue-dark);font-weight:900}
+.tab i{display:block;font-style:normal;font-size:18px;margin-bottom:2px}
+
+/* ── Help FAB ── */
+.help-fab{position:fixed;right:max(16px,calc((100vw - 520px)/2 + 16px));
+  bottom:calc(84px + env(safe-area-inset-bottom));z-index:35;
+  width:56px;height:56px;border-radius:50%;border:0;
+  background:radial-gradient(circle at 35% 30%,#50c0ff 0%,#2a80ff 44%,#1558d8 100%);
+  color:#fff;box-shadow:0 16px 36px rgba(28,110,230,.32),inset 0 1px 0 rgba(255,255,255,.2);
+  display:grid;place-items:center;cursor:pointer;transition:transform .18s}
+.help-fab:active{transform:scale(.94)}
+.help-fab span{font-size:24px;line-height:1;font-weight:900}
+.help-fab:after{content:"";position:absolute;right:6px;top:6px;width:10px;height:10px;
+  border-radius:50%;background:#39b96d;border:2px solid #fff}
+
+/* ── Modal ── */
+.modal{position:fixed;inset:0;background:rgba(8,22,36,.48);z-index:40;
+  display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.sheet{width:100%;max-width:520px;background:#fff;border-radius:28px 28px 0 0;
+  padding:18px 18px calc(22px + env(safe-area-inset-bottom));
+  max-height:82vh;overflow:auto;box-shadow:0 -24px 60px rgba(10,24,40,.24)}
+.sheet h2{margin:0 0 8px;font-size:23px;letter-spacing:-.04em}
+.sheet p{color:var(--muted);font-size:13.5px;line-height:1.44}
+.close{border:0;background:var(--ice);border-radius:13px;padding:9px 12px;
+  font-weight:800;color:var(--ink);cursor:pointer;font-size:13px}
+
+/* ── Shared components ── */
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.small{font-size:11.5px!important;color:var(--muted)!important;line-height:1.35!important}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;
+  background:var(--ice);border:1px solid var(--line);font-size:11px;color:var(--ink);margin:2px;font-weight:700}
+.badge.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+.badge.gold{background:#fff5e6;color:#7a5020;border-color:#f0d4ae}
+.badge.green{background:#ecf8f2;color:#2a7248;border-color:#cbeedd}
+.badge.red{background:#fff0ef;color:#9e3c38;border-color:#ffd2cf}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+.kpi div{background:#fff;border:1px solid var(--line);border-radius:18px;padding:11px;text-align:center}
+.kpi b{display:block;font-size:17px;color:var(--dark)}
+.kpi span{display:block;font-size:10.5px;color:var(--muted);line-height:1.2;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:22px;padding:13px;
+  min-height:108px;cursor:pointer;box-shadow:0 4px 14px rgba(15,33,51,.05)}
+.tile:active{transform:scale(.985)}
+.tile .ico{width:37px;height:37px;border-radius:14px;background:var(--ice);
+  display:grid;place-items:center;margin-bottom:9px;font-size:18px}
+.tile b{display:block;font-size:13.5px;margin-bottom:4px;line-height:1.15}
+.tile span{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+.btn{width:100%;border:0;border-radius:17px;background:var(--blue);color:#fff;
+  padding:13px 14px;font-weight:900;font-size:14px;cursor:pointer;
+  box-shadow:0 10px 24px rgba(74,127,160,.22)}
+.btn.secondary{background:#fff;color:var(--blue);border:1px solid var(--line);box-shadow:none}
+.btn.gold{background:var(--gold)}.btn.green{background:var(--green)}.btn.red{background:var(--red)}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.chips{display:flex;gap:8px;overflow:auto;margin:0 -16px 13px;padding:0 16px 5px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:#fff;
+  padding:9px 13px;font-size:13px;color:var(--ink);font-weight:800;cursor:pointer}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.notice{border-left:4px solid var(--gold);background:#fff7ea;border-radius:17px;
+  padding:12px;margin-bottom:13px;color:#7a5020;font-size:12.5px;line-height:1.36}
+.soft{border-left:4px solid var(--green);background:#edf8f2;border-radius:17px;
+  padding:12px;margin-bottom:13px;color:#2f5240;font-size:12.5px;line-height:1.36}
+.mapbox{height:330px;border:1px solid var(--line);border-radius:26px;
+  background:linear-gradient(145deg,#e6f0f5,#fff);position:relative;overflow:hidden;margin-bottom:13px}
+.mapbox:before{content:"";position:absolute;left:38px;right:32px;top:44px;bottom:40px;
+  border:3px dashed rgba(74,127,160,.3);border-radius:47% 53% 46% 54%;transform:rotate(-13deg)}
+.pin{position:absolute;width:32px;height:32px;border-radius:50% 50% 50% 8px;background:var(--blue);
+  transform:rotate(-45deg);display:grid;place-items:center;color:#fff;font-weight:900;
+  box-shadow:0 10px 24px rgba(15,33,51,.22);cursor:pointer}
+.pin i{transform:rotate(45deg);font-style:normal}
+.pin.gold{background:var(--gold)}.pin.green{background:var(--green)}.pin.red{background:var(--red)}
+.item{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;
+  align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.thumb{width:52px;height:52px;border-radius:17px;background:var(--ice);
+  display:grid;place-items:center;font-size:22px}
+.item b{font-size:14px}
+.item .desc{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:2px}
+.price{font-weight:900;color:var(--blue);white-space:nowrap;font-size:13px}
+.mini-btn{border:1px solid var(--line);background:#fff;color:var(--blue);
+  border-radius:13px;padding:8px 11px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+.msg{background:#fff;border:1px solid var(--line);border-radius:19px;
+  padding:11px;margin:7px 0;max-width:88%}
+.msg.me{background:#e4eef4;margin-left:auto}
+.msg b{font-size:12.5px}
+.msg div{font-size:12.5px;color:var(--ink);line-height:1.4;margin-top:3px}
+input,textarea,select{width:100%;border:1px solid var(--line);background:#fff;
+  border-radius:17px;padding:13px;font-family:inherit;color:var(--ink);margin:7px 0;font-size:14px}
+textarea{min-height:86px;resize:vertical}
+.progress{height:8px;background:#dde9f0;border-radius:99px;overflow:hidden;margin:9px 0}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:99px}
+.goal{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.goal:last-child{border-bottom:0}
+.check{width:30px;height:30px;border-radius:50%;background:var(--ice);
+  display:grid;place-items:center;font-weight:900;color:var(--blue)}
+.goal.done .check{background:var(--green);color:#fff}
+.privacy{display:grid;gap:9px}
+.privacy .row{background:#fff;border:1px solid var(--line);border-radius:17px;padding:10px}
+.switch{min-width:42px;width:42px;height:24px;border-radius:99px;background:#d8e5ec;position:relative}
+.switch:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.14)}
+.switch.on{background:var(--blue)}
+.switch.on:after{left:21px}
+.hidden{display:none!important}
+.stars{font-size:28px;color:var(--gold);letter-spacing:2px;margin:8px 0}
+.modebar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}
+.modebar button{border:1px solid var(--line);background:#fff;border-radius:17px;padding:12px;
+  font-weight:900;color:var(--ink);cursor:pointer}
+.modebar button.on{background:var(--dark);border-color:var(--dark);color:#fff}
+
+/* Destination section */
+.destination-card{background:#fff;border:1px solid var(--line);border-radius:24px;
+  padding:14px;margin-bottom:13px;box-shadow:0 8px 24px rgba(15,33,51,.05)}
+.destination-card h3{font-size:17px;margin:0 0 8px}
+.destination-search{display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+  background:linear-gradient(145deg,#f6fbfd,#fff);border-radius:19px;padding:11px 12px;cursor:pointer}
+.destination-search .search-ico{width:36px;height:36px;border-radius:14px;background:var(--ice);
+  display:grid;place-items:center;font-size:17px}
+.destination-search b{display:block;font-size:14px;color:var(--dark)}
+.destination-search span{display:block;font-size:11.5px;color:var(--muted);line-height:1.25;margin-top:2px}
+.dest-chips{display:flex;gap:8px;overflow:auto;margin:10px -2px 0;padding:0 2px 3px;scrollbar-width:none}
+.dest-chips::-webkit-scrollbar{display:none}
+.dest-chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:7px 11px;font-size:12px;font-weight:900;color:var(--ink);cursor:pointer}
+.dest-chip.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+.weather-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+.weather-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:12px;
+  box-shadow:0 5px 16px rgba(15,33,51,.04);cursor:pointer;min-height:108px}
+.weather-card:active{transform:scale(.985)}
+.weather-city{font-size:12px;font-weight:900;color:var(--dark);margin-bottom:5px}
+.weather-temp{font-size:23px;font-weight:900;letter-spacing:-.05em;color:var(--blue);line-height:1}
+.weather-meta{font-size:10.5px;color:var(--muted);line-height:1.28;margin-top:7px}
+.weather-icon{width:32px;height:32px;border-radius:13px;background:var(--ice);
+  display:grid;place-items:center;margin-bottom:7px}
+.weather-note{font-size:11.5px;color:var(--muted);line-height:1.3;margin:-5px 2px 10px}
+
+.help-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.help-action{border:1px solid var(--line);background:#fff;border-radius:17px;
+  padding:12px;text-align:left;cursor:pointer}
+.help-action b{display:block;font-size:13px;color:var(--dark)}
+.help-action span{display:block;font-size:11.5px;color:var(--muted);line-height:1.25;margin-top:3px}
+
+@media(min-width:560px){
+  .app{margin:18px auto;border-radius:36px;min-height:calc(100vh - 36px);overflow:hidden}
+  .bottom{border-radius:22px 22px 0 0}
+  .header{border-radius:36px 36px 0 0}
+}
+@media(max-width:380px){
+  .dash{grid-template-columns:1fr}
+  .hero-btns,.shortcuts,.weather{grid-template-columns:1fr 1fr}
+  .weather .wx-card:last-child{grid-column:1/-1}
+  .kpi-row .kpi-box{padding:11px}
+  .home-hero h3{font-size:25px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="topline"><span>21:42 · Мурманск</span><span class="status-pill">Protect активен</span></div>
+    <div class="brand">
+      <div class="logo">SR</div>
+      <div><div id="title" class="hd-title">Главная</div><div id="sub" class="hd-sub">Сводка поездки, быстрые действия</div></div>
+    </div>
+  </header>
+  <main id="content" class="content"></main>
+</div>
+<nav id="bottom" class="bottom"></nav>
+<button class="help-fab" onclick="openHelpWidget()" aria-label="Нужна помощь"><span>?</span></button>
+<div id="modal" class="modal"><div id="sheet" class="sheet"></div></div>
+<script>
+const screens=[
+{id:'home',name:'Главная',icon:'⌂',sub:'Сводка поездки, доступ, быстрые действия'},
+{id:'pass',name:'Travel Pass',icon:'◆',sub:'Доступ по прилёту и закрытие после вылета'},
+{id:'schedule',name:'План',icon:'◷',sub:'Расписание, активности, коллабы и свободные окна'},
+{id:'map',name:'Карта',icon:'⌖',sub:'Экскурсия / свободный режим, локации и изменения'},
+{id:'activities',name:'Активности',icon:'☄',sub:'Быстрый выбор активностей и индивидуальные программы'},
+{id:'tours',name:'Туры',icon:'▦',sub:'Направления, форматы, классы и подбор тура'},
+{id:'collabs',name:'Коллабы',icon:'☷',sub:'Совместные заявки, разделение расходов и подбор компании'},
+{id:'guides',name:'Гиды',icon:'★',sub:'Специализация, навыки, рейтинг, философия и заказ программы'},
+{id:'handoff',name:'Передача',icon:'⇄',sub:'Состояние группы, привалы, инвентарь, новый гид'},
+{id:'chat',name:'Чаты',icon:'☰',sub:'Группа, оператор, гиды, туристы, локации'},
+{id:'protect',name:'Защита',icon:'☂',sub:'Arctic Protect, помощь, страховой партнёр, обращения'},
+{id:'finance',name:'Выгода',icon:'₽',sub:'Расходы, экономия, бонусы, заработок и индекс эмоций'},
+{id:'booking',name:'Жильё',icon:'⌂',sub:'Квартиры, апартаменты, ночлег и другие регионы'},
+{id:'store',name:'Маркет',icon:'＋',sub:'Еда, гид, оператор, трансфер, инвентарь, развлечения'},
+{id:'quests',name:'Квесты',icon:'🏆',sub:'Фото, точки, вклад в маршруты, призы'},
+{id:'routes',name:'Маршруты',icon:'✎',sub:'UGC-маршруты, форки, правки, бонусы авторам'},
+{id:'ref',name:'Рефералка',icon:'↗',sub:'Приглашения, кэшбек, рекомендации друзьям'},
+{id:'cloud',name:'Облако',icon:'☁',sub:'Фото, видео, AI-фильм, история поездок'},
+{id:'adventures',name:'Среда приключений',icon:'▶',sub:'Челлендж, серия передач, выход из суеты'},
+{id:'profile',name:'Профиль',icon:'◎',sub:'Приватность, цели, здоровье, подготовка, инвентарь'},
+{id:'menu',name:'Меню',icon:'☷',sub:'Все разделы приложения'}
+];
+const dayNames={today:'Сегодня',tomorrow:'Завтра',after:'Послезавтра'};
+const plan={
+ today:[
+  {time:'09:00–10:20',title:'Завтрак и сбор',type:'done',short:'проверить одежду, заряд, термос',desc:'Спокойное начало дня: завтрак, проверка одежды, зарядки телефона, термоса и запасного аккумулятора.',place:'Апартаменты / точка сбора',risk:'Низкий',actions:['Напомнить группе','Список вещей','Передать оператору']},
+  {time:'10:20–12:00',title:'Трансфер',type:'done',short:'в пути 1 ч 40 мин, привал 11:15–11:25',desc:'Переезд до основной локации. Водитель отмечает время в пути, оператор видит отклонения.',place:'Мурманск → побережье',risk:'Средний из-за погоды',actions:['Открыть маршрут','Проверить дорогу','Связь с водителем']},
+  {time:'12:10–15:10',title:'Маршрут с Андреем',type:'',short:'средний темп, 2 участника без опыта',desc:'Основная часть экскурсии. Гид ведёт группу спокойным темпом, отслеживает усталость.',place:'Береговая тропа',risk:'Средний',actions:['Подробнее о точке','Задать вопрос гиду','Сократить маршрут']},
+  {time:'15:20',title:'Передача группе Марии',type:'warn',short:'новый гид получит здоровье, привалы, инвентарь, пожелания',desc:'Передача группы новому гиду. Мария получает полную сводку: имена, состояние, инвентарь и пожелания туристов.',place:'Смотровая площадка',risk:'Важно не потерять контекст',actions:['Вопрос новому гиду','Оценить прошлого гида','Открыть карточку передачи']},
+  {time:'16:00–17:30',title:'Свободное окно',type:'',short:'можно заказать еду, фотографа, доп. гида или отдых',desc:'Время без обязательной активности. Можно отдохнуть, заказать горячую еду или присоединиться к коллабу.',place:'Локация рядом с кафе',risk:'Низкий',actions:['Заказать еду','Найти коллаб','Заказать фотографа']},
+  {time:'22:10',title:'Охота за сиянием',type:'',short:'коллаб: 3 места свободно, можно разделить трансфер',desc:'Вечерний выезд при подходящих условиях. Система учитывает облачность, индекс активности, дорогу.',place:'Точка с низкой засветкой',risk:'Зависит от погоды',actions:['Войти в коллаб','Открыть Protect','Посмотреть прогноз']}
+ ],
+ tomorrow:[
+  {time:'08:30–09:30',title:'Завтрак и подготовка',type:'done',short:'проверить одежду для моря и таблетки от укачивания',desc:'Подготовка к морскому выходу.',place:'Апартаменты',risk:'Низкий',actions:['Список вещей','Заказать еду','Вопрос оператору']},
+  {time:'10:00–13:30',title:'Морская прогулка / киты',type:'warn',short:'выход зависит от ветра и решения капитана',desc:'Активность зависит от погодных условий и решения капитана.',place:'Причал / море',risk:'Высокий при ветре',actions:['Проверить статус выхода','Открыть Protect','Замена активности']},
+  {time:'14:00–15:00',title:'Обед у партнёра',type:'',short:'стол забронирован, можно указать пожелания по еде',desc:'Партнёрский ресторан.',place:'Ресторан партнёра',risk:'Низкий',actions:['Указать питание','Оценить ресторан','Сообщить проблему']},
+  {time:'17:00–19:00',title:'Свободная программа',type:'',short:'маршруты пользователей, город, сувениры, отдых',desc:'Свободное время.',place:'Мурманск',risk:'Низкий',actions:['Маршруты рядом','Маркет','Тихий режим']}
+ ],
+ after:[
+  {time:'09:40–11:00',title:'Выезд из жилья',type:'',short:'проверка вещей, закрытие проживания',desc:'Система напоминает о забытых вещах и времени выезда.',place:'Апартаменты',risk:'Низкий',actions:['Проверить вещи','Продлить жильё','Помощь с багажом']},
+  {time:'11:30–14:00',title:'Городской маршрут',type:'',short:'лёгкий маршрут перед вылетом',desc:'Лёгкий маршрут без перегруза перед аэропортом.',place:'Мурманск',risk:'Низкий',actions:['Сменить маршрут','Заказать трансфер','Открыть карту']},
+  {time:'16:30–18:00',title:'Аэропорт и итог поездки',type:'warn',short:'AI-фильм, бонусы, рефералка, рекомендации друзьям',desc:'Перед вылетом формируется архив: фото, AI-фильм, достижения, маршруты, бонусы.',place:'Аэропорт',risk:'Не опоздать на рейс',actions:['Открыть облако','Поделиться другом','Проверить вылет']}
+ ]
+};
+let current='home', currentDay='today', mapMode='tour';
+function fmt(n){return new Intl.NumberFormat('ru-RU').format(n)+' ₽'}
+function setHeader(id){const s=screens.find(x=>x.id===id)||screens[0];document.getElementById('title').textContent=s.name;document.getElementById('sub').textContent=s.sub}
+function renderBottom(){const fixed=['home','schedule','map','chat','menu'];document.getElementById('bottom').innerHTML=fixed.map(id=>{const s=screens.find(x=>x.id===id);return`<button class="tab ${current===id?'on':''}" onclick="go('${id}')"><i>${s.icon}</i>${s.name}</button>`}).join('')}
+function go(id){current=id;setHeader(id);document.getElementById('content').innerHTML=(views[id]||views.home)();renderBottom();window.scrollTo({top:0,behavior:'instant'})}
+function show(html){document.getElementById('sheet').innerHTML=html;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function ok(text){show(`<div class="row"><h2>Готово</h2><button class="close" onclick="closeModal()">Закрыть</button></div><p>${text}</p><div class="soft">В реальной системе это действие создаёт задачу оператору, гиду или партнёру и проходит полный цикл.</div>`)}
+function info(title,body,cta='Понятно'){show(`<div class="row"><h2>${title}</h2><button class="close" onclick="closeModal()">×</button></div>${body}<button class="btn" onclick="closeModal()">${cta}</button>`)}
+
+const weatherPoints={
+  murmansk:{name:'Мурманск',temp:'+4°',wind:'ветер 6 м/с',rain:'осадки 20%',note:'город, кафе, трансферы, стартовые точки'},
+  kirovsk:{name:'Кировск',temp:'−1°',wind:'ветер 9 м/с',rain:'снег 45%',note:'Хибины, горные маршруты, квадроциклы'},
+  teriberka:{name:'Териберка',temp:'+2°',wind:'ветер 12 м/с',rain:'осадки 35%',note:'океан, дорога, побережье, сияние'}
+};
+function chooseDestination(name){ok(`Направление «${name}» выбрано. Оператор увидит интерес туриста.`)}
+function openDestinationSearch(){info('Куда ищем путёвку?',`<p>Выберите город, локацию или тип поездки.</p><input placeholder="Например: Териберка, Хибины, сияние, рыбалка"><select><option>Путёвка: готовый тур</option><option>Проживание + активности</option><option>Только экскурсия</option><option>Самостоятельно + поддержка</option></select><textarea placeholder="Сколько человек, даты, бюджет, что точно хочется увидеть"></textarea><button class="btn" onclick="ok('Заявка на подбор путёвки создана')">Подобрать путёвку</button>`,'Закрыть')}
+function openWeatherDetail(key){const w=weatherPoints[key];info(`Погода · ${w.name}`,`<div class="kpi"><div><b>${w.temp}</b><span>температура</span></div><div><b>${w.wind.replace('ветер ','')}</b><span>ветер</span></div><div><b>${w.rain.replace('осадки ','')}</b><span>осадки</span></div></div><p>${w.note}</p><div class="soft"><b>Как влияет на план:</b> оператор учитывает погоду при подборе маршрута, одежды, трансфера и Protect-сценария.</div><button class="btn secondary" onclick="go('protect');closeModal()">Открыть Protect</button>`,'Понятно')}
+
+function dayChips(){return`<div class="chips">${Object.keys(dayNames).map(k=>`<span class="chip ${currentDay===k?'on':''}" onclick="setDay('${k}')">${dayNames[k]}</span>`).join('')}<span class="chip" onclick="openFreeWindows()">Свободные окна</span><span class="chip" onclick="go('collabs')">Коллабы</span><span class="chip" onclick="openRequests()">Заявки</span></div>`}
+function setDay(day){currentDay=day;go('schedule')}
+function renderTimeline(day){return`<div class="timeline">${plan[day].map((p,i)=>`<div class="step ${p.type}" onclick="openPoint('${day}',${i})"><b>${p.time} · ${p.title}</b><span>${p.short}</span></div>`).join('')}</div>`}
+function openPoint(day,i){const p=plan[day][i];show(`<div class="row"><h2>${p.title}</h2><button class="close" onclick="closeModal()">×</button></div><span class="badge dark">${dayNames[day]}</span><span class="badge">${p.time}</span><span class="badge gold">${p.risk}</span><p><b>Где:</b> ${p.place}</p><p>${p.desc}</p><div class="card" style="box-shadow:none;margin:12px 0"><h3>Что можно сделать</h3>${p.actions.map(a=>`<button class="btn secondary" style="margin-top:8px" onclick="openAction('${a}')">${a}</button>`).join('')}</div><button class="btn" onclick="ok('Точка маршрута добавлена в активный план')">Добавить в мой план</button>`)}
+function openAction(a){const map={'Напомнить группе':'Оператор отправит группе мягкое напоминание.','Список вещей':'Открывается чек-лист одежды, термоса, зарядки и инвентаря.','Передать оператору':'Создаётся задача оператору с привязкой к точке.','Открыть маршрут':'Открывается карта с текущим участком.','Проверить дорогу':'Оператор проверяет ограничения дороги.','Связь с водителем':'Создаётся запрос водителю и оператору.','Подробнее о точке':'Открывается описание локации, риски, фото и рекомендации.','Задать вопрос гиду':'Вопрос уйдёт гиду и оператору.','Сократить маршрут':'Оператор предложит безопасный сокращённый маршрут.','Вопрос новому гиду':'Сообщение передано в карточку передачи группы.','Оценить прошлого гида':'Откроется оценка гида и запрос контакта.','Открыть карточку передачи':'Переход к экрану передачи.','Заказать еду':'Оператор подберёт горячую еду у партнёра.','Найти коллаб':'Переход к совместным поездкам.','Заказать фотографа':'Заявка уйдёт партнёру-фотографу.','Войти в коллаб':'Вы будете добавлены в коллаб.','Открыть Protect':'Открывается обращение Arctic Protect.','Посмотреть прогноз':'Система покажет вероятность сияния.','Проверить статус выхода':'Капитан подтверждает возможность выхода.','Замена активности':'Оператор предложит альтернативу.','Указать питание':'Запрос уйдёт ресторану.','Оценить ресторан':'Оценка попадёт в контроль качества.','Сообщить проблему':'Создаётся обращение по качеству услуги.','Маршруты рядом':'Открываются пользовательские маршруты рядом.','Маркет':'Открывается маркет услуг.','Тихий режим':'Оповещения приглушены до следующей точки.','Проверить вещи':'Откроется чек-лист выезда.','Продлить жильё':'Запрос на продление уйдёт партнёру.','Помощь с багажом':'Оператор подберёт помощь.','Сменить маршрут':'Оператор предложит вариант полегче.','Заказать трансфер':'Заявка уйдёт перевозчику.','Открыть карту':'Открывается карта.','Открыть облако':'Открывается архив и AI-фильм.','Поделиться другом':'Открывается реферальная рекомендация.','Проверить вылет':'Оператор проверит время вылета.'};
+ if(a==='Открыть карточку передачи')return go('handoff');if(a==='Открыть Protect')return go('protect');if(a==='Найти коллаб')return go('collabs');if(a==='Маркет')return go('store');if(a==='Открыть карту')return go('map');if(a==='Открыть облако')return go('cloud');if(a==='Маршруты рядом')return go('routes');
+ ok(map[a]||`Действие «${a}» отправлено оператору`)}
+function openFreeWindows(){info('Свободные окна',`<p>Время, когда можно не перегружать отдых телефоном.</p><div class="card" style="box-shadow:none"><b>Сегодня 16:00–17:30</b><p>Отдых, еда, фотограф, доп. гид или ничего не делать.</p></div><div class="card" style="box-shadow:none"><b>Завтра 17:00–19:00</b><p>Город, сувениры, кафе, пользовательские маршруты.</p></div>`)}
+function openRequests(){info('Мои заявки',`<div class="item"><div class="thumb">?</div><div><b>Вопрос новому гиду</b><div class="desc">передан Марии и оператору</div></div><span class="badge green">в работе</span></div><div class="item"><div class="thumb">🍲</div><div><b>Горячая еда</b><div class="desc">ожидает подтверждения</div></div><span class="badge gold">новая</span></div><div class="item"><div class="thumb">☂</div><div><b>Protect по погоде</b><div class="desc">есть запасной сценарий</div></div><span class="badge green">готово</span></div>`)}
+function openCreateCollab(){info('Создать коллаб',`<p>Коллаб — совместная заявка на услугу: трансфер, гида, катер, рыбалку, квадроциклы, фото.</p><input placeholder="Куда или на какую услугу?"><select><option>Разделить трансфер</option><option>Собрать группу на тур</option><option>Найти людей под гида</option><option>Совместная рыбалка / катер</option><option>Квадроциклы / Хибины</option></select><textarea placeholder="Когда, сколько мест, бюджет, уровень подготовки"></textarea><button class="btn" onclick="ok('Коллаб создан как сервисная заявка')">Создать коллаб</button>`,'Закрыть')}
+function openCollabDetail(kind){const data={teriberka:{title:'Коллаб-трансфер в Териберку',icon:'🚐',desc:'Совместная поездка для тех, кто хочет разделить трансфер.',price:'экономия до 1 800 ₽ с человека',people:'осталось 2 места из 7',risk:'дорога и погода',actions:['Войти в коллаб','Задать вопрос оператору','Проверить Protect']},aurora:{title:'Ночной выезд за сиянием',icon:'🌌',desc:'Коллаб под погодное окно: группа собирается быстро.',price:'от 1 900 ₽ вместо индивидуального',people:'3 места свободно',risk:'облачность / видимость',actions:['Войти в коллаб','Поставить ожидания','Открыть прогноз']},sea:{title:'Морская рыбалка / катер',icon:'🎣',desc:'Сбор группы на катер для снижения стоимости.',price:'экономия до 4 500 ₽',people:'нужно добрать 4 человека',risk:'шторм / отмена',actions:['Встать в лист ожидания','Уточнить экипировку','Открыть Protect']},hibiny:{title:'Хибины с гидом и трансфером',icon:'🏔',desc:'Коллаб по уровню подготовки и погодному окну.',price:'экономия до 2 300 ₽',people:'4 из 8 участников',risk:'ветер / усталость',actions:['Войти','Проверить уровень','Задать вопрос гиду']},river:{title:'Речная рыбалка',icon:'🐟',desc:'Мягкий формат без выхода в море.',price:'от 2 400 ₽',people:'2 места свободно',risk:'уровень воды / погода',actions:['Войти','Заказать снасти','Уточнить трансфер']},quad:{title:'Хибины на квадроциклах',icon:'🏍️',desc:'Активный формат с инструктором.',price:'от 6 900 ₽',people:'группа до 6 человек',risk:'погода / техника',actions:['Забронировать место','Уточнить экипировку','Задать вопрос инструктору']}};const c=data[kind];info(c.title,`<div class="item"><div class="thumb">${c.icon}</div><div><b>${c.people}</b><div class="desc">${c.price}</div></div><span class="badge gold">${c.risk}</span></div><p>${c.desc}</p><div class="card" style="box-shadow:none;margin:12px 0"><h3>Что сделает система</h3><p>Создаст заявку, проверит партнёра, рассчитает цену, добавит Protect-сценарий.</p></div>${c.actions.map(a=>`<button class="btn secondary" style="margin-top:8px" onclick="ok('Действие ${a} добавлено в коллаб')">${a}</button>`).join('')}`)}
+function openCollabRules(){info('Как работает коллаб',`<p>Коллаб — совместная покупка услуги, а не просто чат.</p><div class="card" style="box-shadow:none"><h3>Цикл</h3><p>Инициатор создаёт → туристы присоединяются → оператор проверяет партнёра → участники подтверждают → услуга попадает в расписание.</p></div>`)}
+function openGuideProfile(id){const guides={andrey:{name:'Андрей Северцев',role:'Териберка, береговые маршруты',rating:'4.9',style:'спокойный темп без героизма',skills:'ориентирование, первая помощь, фототочки',merits:'Вывел группу из снежного заряда без паники.',view:'Север не надо покорять. Его надо уважать.',best:'семьи, первые поездки',region:'Териберка, берег'},maria:{name:'Мария Полярная',role:'Северное сияние, фото-точки',rating:'4.95',style:'видит кадр, ритм вечера',skills:'ночные выезды, прогноз сияния, фото-точки',merits:'Серия сценариев "сияние без суеты".',view:'Иногда главное — момент, когда человек поднял глаза.',best:'сияние, фото, пары',region:'вечерние маршруты'},nikita:{name:'Никита Громов',role:'Море, киты, рыбалка',rating:'4.8',style:'сухо, чётко, по делу',skills:'морская логистика, погодные окна, снасти',merits:'Заранее отменял выход и спасал тур от конфликта.',view:'Хороший гид не обещает китов.',best:'морская рыбалка, компании',region:'морские выходы'},olga:{name:'Ольга Вершина',role:'Хибины, квадроциклы, семейные маршруты',rating:'4.86',style:'активно, но без давления',skills:'горные маршруты, безопасность, дети',merits:'Мягкий маршрут по Хибинам для смешанных групп.',view:'Горы должны расширять границы.',best:'Хибины, семьи',region:'горные маршруты'},sergey:{name:'Сергей Тайга',role:'Автономные форматы, дикари',rating:'4.76',style:'минимум слов, максимум пользы',skills:'автономность, ночлег, перестройка маршрута',merits:'Помогал быстро перестраивать планы при закрытии дорог.',view:'Свобода начинается с подготовки.',best:'дикари, походы',region:'автономные маршруты'}};const g=guides[id];info(g.name,`<div class="row" style="margin-bottom:6px;justify-content:flex-start;flex-wrap:wrap"><span class="badge dark">${g.role}</span><span class="badge green">рейтинг ${g.rating}</span></div><p><b>Стиль:</b> ${g.style}</p><p><b>Навыки:</b> ${g.skills}</p><p><b>Взгляд:</b> ${g.view}</p><div class="soft"><b>Кейс:</b> ${g.merits}</div><div class="btnrow"><button class="btn secondary" onclick="openGuideQuestion('${g.name}')">Вопрос</button><button class="btn secondary" onclick="openGuideOrderFor('${g.name}')">Заказать</button></div>`)}
+function openGuideQuestion(name){info('Вопрос гиду',`<textarea placeholder="Вопрос для ${name}"></textarea><button class="btn" onclick="ok('Вопрос для ${name} передан оператору')">Отправить</button>`,'Закрыть')}
+function openGuideOrderFor(name){info('Заказать гида',`<input placeholder="Дата / время"><textarea placeholder="Маршрут, темп, бюджет, состав группы"></textarea><button class="btn" onclick="ok('Заявка на гида ${name} отправлена')">Отправить</button>`,'Закрыть')}
+function openQuestion(){info('Вопрос / просьба гиду',`<textarea placeholder="Темп, фото, питание, маршрут"></textarea><button class="btn" onclick="ok('Сообщение отправлено гиду и оператору')">Отправить</button>`,'Закрыть')}
+function openGuideRate(){info('Оценить гида',`<div class="stars">★★★★★</div><textarea placeholder="Что понравилось / что передать новому гиду"></textarea><div class="btnrow"><button class="btn secondary" onclick="ok('Запрос на фото отправлен')">Фото</button><button class="btn secondary" onclick="ok('Запрос контакта отправлен')">Контакт</button></div><button class="btn" style="margin-top:10px" onclick="ok('Оценка гида отправлена')">Отправить оценку</button>`)}
+function openGuideOrder(){info('Заказать тур',`<input placeholder="Дата / время"><textarea placeholder="Локации, темп, бюджет, группа"></textarea><button class="btn" onclick="ok('Заказ отправлен оператору')">Отправить</button>`)}
+function openHelpWidget(){show(`<div class="row"><h2>Нужна помощь?</h2><button class="close" onclick="closeModal()">Закрыть</button></div><p>Выберите тип обращения.</p><div class="help-actions"><div class="help-action" onclick="ok('Оператор получил срочный запрос')"><b>Срочно</b><span>потерялись, плохо, нужна связь</span></div><div class="help-action" onclick="go('protect');closeModal()"><b>Protect</b><span>дорога, погода, отмена</span></div><div class="help-action" onclick="openQuestion()"><b>Гиду</b><span>пожелание, темп, вопрос</span></div><div class="help-action" onclick="go('store');closeModal()"><b>Заказать</b><span>еда, трансфер, оператор</span></div></div><div class="soft" style="margin-top:12px">Оператор решает часть вопросов удалённо.</div>`)}
+function service(name){info(name,`<p>Заявка уйдёт оператору. Он подберёт партнёра и проверит доступность.</p><textarea placeholder="Пожелания, время, количество человек"></textarea><button class="btn" onclick="ok('Заявка по услуге «${name}» создана')">Заказать</button>`)}
+function quickTour(kind){const data={river:{title:'Речная рыбалка',icon:'🐟',desc:'Спокойный формат на реке.',time:'2–5 часов',level:'лёгкий',protect:'перенос или замена локации при погоде'},quad:{title:'Хибины на квадроциклах',icon:'🏍',desc:'Активный маршрут по Хибинам.',time:'2–4 часа',level:'средний',protect:'перенос при погоде или технических проблемах'}}[kind];info(data.title,`<div class="row" style="margin-bottom:10px"><div class="thumb">${data.icon}</div><div><b>${data.title}</b><div class="desc">${data.time} · ${data.level}</div></div></div><p>${data.desc}</p><div class="soft"><b>Protect:</b> ${data.protect}</div><textarea placeholder="Когда, сколько человек, нужен трансфер"></textarea><button class="btn" onclick="ok('Заявка на ${data.title} создана')">Запросить подбор</button>`)}
+
+const tourDirections=[{icon:'🌌',title:'Северное сияние',desc:'Ночные выезды, прогнозы, точки без засветки.',best:'вечер / ночь',level:'лёгкий',protect:'повторный выезд или сертификат'},{icon:'🌊',title:'Териберка и океан',desc:'Побережье, пляж, водопад, фото-точки.',best:'1 день',level:'лёгкий / средний',protect:'дорога, погода, перенос'},{icon:'🐋',title:'Киты и морские выходы',desc:'Морская прогулка с капитаном.',best:'3–5 часов',level:'средний',protect:'отмена, замена активности'},{icon:'🎣',title:'Морская рыбалка',desc:'Катер, снасти, капитан, трансфер.',best:'полдня',level:'средний',protect:'погода, перенос'},{icon:'🐟',title:'Речная рыбалка',desc:'Береговая рыбалка, снасти, чай.',best:'2–5 часов',level:'лёгкий',protect:'погода, замена локации'},{icon:'🏔',title:'Хибины и горы',desc:'Горные маршруты, обзорные точки.',best:'1–2 дня',level:'средний',protect:'сокращение, погода'},{icon:'🏍',title:'Хибины на квадроциклах',desc:'Активный маршрут с инструктором.',best:'2–4 часа',level:'средний',protect:'погода, техника'},{icon:'🦌',title:'Саамская деревня',desc:'Семейный формат, культура, животные.',best:'2–4 часа',level:'лёгкий',protect:'трансфер, перенос'},{icon:'🍲',title:'Гастро и кухня',desc:'Рестораны, дегустации, морепродукты.',best:'вечер',level:'лёгкий',protect:'замена локации'},{icon:'📸',title:'Фото / контент-тур',desc:'Маршрут под кадры, фотограф, дрон.',best:'2–6 часов',level:'лёгкий',protect:'перенос съёмки'},{icon:'🚐',title:'Трансферы',desc:'Между локациями, проверенные водители.',best:'любой день',level:'лёгкий',protect:'задержки, замена'},{icon:'⛺',title:'Дикари / автономный формат',desc:'Ночлег, маршруты, безопасность.',best:'1–3 дня',level:'сложный',protect:'связь, ночлег, помощь'}];
+const tourFormats=[{icon:'👥',title:'Групповой тур',desc:'Дешевле, фиксированный маршрут.',best:'когда важна цена',level:'стандартный',protect:'оператор за графиком'},{icon:'👤',title:'Индивидуальный',desc:'Маршрут под вас: темп, точки, дети.',best:'семья / пара / VIP',level:'гибкий',protect:'быстрее меняется'},{icon:'🤝',title:'Коллаб-тур',desc:'Туристы сами собирают группу.',best:'экономия и знакомства',level:'зависит от группы',protect:'оператор контролирует сбор'},{icon:'🧭',title:'Самостоятельный + поддержка',desc:'Турист идёт сам, получает карту и связь.',best:'для опытных',level:'средний',protect:'помощь, запасной сценарий'},{icon:'🧑‍✈️',title:'С гидом + оператор удалённо',desc:'Гид ведёт, оператор снимает организацию.',best:'сложные группы',level:'любой',protect:'оператор закрывает проблемы'},{icon:'🧺',title:'Семейный',desc:'Мягкий темп, еда, безопасность детей.',best:'семьи с детьми',level:'лёгкий',protect:'переносы, быстрые замены'},{icon:'🏢',title:'Корпоративный',desc:'Тайминг, документы, фотоотчёт.',best:'командировки',level:'стандартный',protect:'отчётность, риски'},{icon:'🎞',title:'Media-формат',desc:'Тур под контент: фото, видео, AI.',best:'личный архив',level:'гибкий',protect:'перенос из-за погоды'}];
+const tourClasses=[{icon:'●',title:'Базовый',desc:'Оптимальная цена, групповой формат.',best:'первый раз',level:'доступный',protect:'базовая поддержка'},{icon:'◆',title:'Комфорт',desc:'Меньше людей, питание, запасной сценарий.',best:'баланс цены',level:'комфортный',protect:'расширенный Protect'},{icon:'★',title:'Premium',desc:'Индивидуальный темп, фото, гибкое расписание.',best:'пары, семьи',level:'высокий',protect:'приоритетная поддержка'},{icon:'✦',title:'Expedition',desc:'Сложнее, автономность, природа.',best:'активные',level:'сложный',protect:'усиленный контроль'},{icon:'☕',title:'Soft / light',desc:'Без перегруза, гастро, отдых.',best:'спокойный отдых',level:'лёгкий',protect:'минимум стресса'},{icon:'📸',title:'Photo / Media',desc:'Лучшие ракурсы, свет, AI-фильм.',best:'контент',level:'гибкий',protect:'замена точек'},{icon:'🛡',title:'Safe family',desc:'Дети, пожилые, здоровье.',best:'семьи',level:'лёгкий',protect:'приоритет безопасности'},{icon:'♛',title:'Corporate',desc:'Документы, тайминг, закрывающие.',best:'компании',level:'управляемый',protect:'операционный контроль'}];
+function tourSection(title,items,type){return`<div class="card"><div class="row"><h3>${title}</h3><span class="small">${items.length} вариантов</span></div>${items.map((t,i)=>`<div class="item"><div class="thumb">${t.icon}</div><div><b>${t.title}</b><div class="desc">${t.desc}</div><div><span class="badge">${t.best}</span><span class="badge gold">${t.level}</span></div></div><button class="mini-btn" onclick="openTourOption('${type}',${i})">Открыть</button></div>`).join('')}</div>`}
+function openTourOption(type,i){const src={direction:tourDirections,format:tourFormats,class:tourClasses}[type];const t=src[i];info(t.title,`<div class="row" style="margin:8px 0 12px"><span class="badge dark">${type==='direction'?'Направление':type==='format'?'Формат':'Класс'}</span><span class="badge">${t.best}</span></div><p>${t.desc}</p><div class="card" style="box-shadow:none;margin:12px 0"><h3>Protect</h3><p>${t.protect}</p></div><button class="btn" onclick="ok('Вариант «${t.title}» добавлен в подбор')">Добавить в подбор</button>`)}
+function openTourBuilder(){info('Подобрать тур',`<p>Выберите направление, формат и класс.</p><select><option>Направление: северное сияние</option><option>Териберка и океан</option><option>Киты / море</option><option>Хибины</option></select><select><option>Формат: мини-группа</option><option>Индивидуальный</option><option>Коллаб</option></select><select><option>Класс: Комфорт</option><option>Базовый</option><option>Premium</option><option>Safe family</option></select><textarea placeholder="Кто едет, бюджет, ограничения"></textarea><button class="btn" onclick="ok('Заявка на подбор тура создана')">Собрать тур</button>`)}
+
+function viewsHome(){return`<div class="home-screen">
+<div class="card home-hero">
+  <div class="mtn-far"></div><div class="mtn-mid"></div><div class="mtn-near"></div><div class="mtn-snow"></div>
+  <div class="eyebrow">✦ Travel Pass активен · 3 дня на Севере</div>
+  <h3>Сегодня — Териберка,<br>море и сияние</h3>
+  <p>Приложение ведёт по маршруту, показывает риски, экономию, коллабы и помогает решать вопросы без лишних звонков.</p>
+  <div class="hero-btns">
+    <button class="glass-btn" onclick="go('schedule')"><div class="g-ico">🗺</div><div><b>Открыть план</b><span>сегодня / завтра / дальше</span></div></button>
+    <button class="glass-btn" onclick="go('map')"><div class="g-ico">📍</div><div><b>Карта маршрута</b><span>экскурсия или свободно</span></div></button>
+  </div>
+</div>
+<div class="kpi-row">
+  <div class="kpi-box" onclick="go('finance')"><div><b>18 400 ₽</b><span>уже потратили</span></div><div class="kpi-ico">👛</div></div>
+  <div class="kpi-box" onclick="go('finance')"><div><b>9 600 ₽</b><span>сэкономили</span></div><div class="kpi-ico">🐷</div></div>
+  <div class="kpi-box" onclick="go('finance')"><div><b>86/100</b><span>индекс эмоций</span></div><div class="kpi-ico">💙</div></div>
+</div>
+<div class="dash">
+  <div class="card plan-card" onclick="go('schedule')">
+    <h3>Ближайший план</h3>
+    <div class="timeline">
+      <div class="step done"><b>12:10 · маршрут с Андреем</b><span>спокойный темп, группа идёт по плану</span></div>
+      <div class="step warn"><b>15:20 · передача Марии</b><span>новый гид получит состав и пожелания</span></div>
+      <div class="step"><b>22:10 · шанс сияния</b><span>AI рекомендует точку у озера</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card stack-card" onclick="go('protect')"><div class="stack-ico">🛡️</div><div><b>Protect</b><span>дорога, погода, море, жильё</span></div></div>
+    <div class="card stack-card" onclick="go('collabs')"><div class="stack-ico">👥</div><div><b>Коллабы</b><span>3 места на сияние ночью</span></div></div>
+    <div class="card stack-card" onclick="go('adventures')"><div class="stack-ico">🏔️</div><div><b>Среда приключений</b><span>челлендж и выход из суеты</span></div></div>
+  </div>
+</div>
+<div class="card op-band">
+  <div class="op-av">ОП</div>
+  <div class="op-info"><b>Оператор на связи</b><span>Кнопка помощи справа снизу. Нажатие создаёт задачу оператору, гиду или партнёру.</span></div>
+  <div class="op-tail"><div class="op-icon">🎧</div><div class="op-arrow">›</div></div>
+</div>
+<div class="sec-title"><h3>Быстрые действия</h3><span>без лишнего шума</span></div>
+<div class="shortcuts">
+  <div class="sc" onclick="go('schedule')"><div class="ico">🗓️</div><b>План</b></div>
+  <div class="sc" onclick="go('map')"><div class="ico">🧭</div><b>Карта</b></div>
+  <div class="sc" onclick="go('chat')"><div class="ico">💬</div><b>Чаты</b></div>
+  <div class="sc" onclick="go('menu')"><div class="ico">☰</div><b>Меню</b></div>
+</div>
+<div class="weather">
+  <div class="wx-card" onclick="openWeatherDetail('murmansk')"><div class="wx-ico">🌨️</div><div class="wx-city">Мурманск</div><div class="wx-temp">−5°</div><div class="wx-feel">ощущается −9°</div><div class="wx-type">снег</div></div>
+  <div class="wx-card" onclick="openWeatherDetail('teriberka')"><div class="wx-ico">⛅</div><div class="wx-city">Териберка</div><div class="wx-temp">−3°</div><div class="wx-feel">ощущается −8°</div><div class="wx-type">облачно</div></div>
+  <div class="wx-card" onclick="openWeatherDetail('kirovsk')"><div class="wx-ico">☀️</div><div class="wx-city">Кировск</div><div class="wx-temp">−7°</div><div class="wx-feel">ощущается −12°</div><div class="wx-type">ясно</div></div>
+</div>
+</div>`}
+
+function viewsPass(){return`<div class="card hero"><div class="row"><div><h3>Travel Pass активен</h3><p>Ваш цифровой сценарий поездки: доступ, безопасность, маршруты, поддержка и история после вылета.</p></div><span class="badge">до 2 июня · 19:10</span></div><div class="btnrow"><button class="btn secondary" onclick="go('schedule')">Открыть план</button><button class="btn secondary" onclick="go('protect')">Protect</button></div></div><div class="kpi"><div><b>3 дня</b><span>активной поездки</span></div><div><b>12</b><span>разделов открыто</span></div><div><b>4</b><span>скрытых рекомендации</span></div></div><div class="card"><h3>Жизненный цикл пропуска</h3><div class="timeline"><div class="step done"><b>1. Прилёт · 30 мая 12:40</b><span>QR на стойке, привязка поездки</span></div><div class="step done"><b>2. Мягкий старт</b><span>инструктаж без перегруза</span></div><div class="step"><b>3. Активная поездка</b><span>план, карта, чаты, коллабы, Protect</span></div><div class="step warn"><b>4. Вылет · 2 июня 19:10</b><span>архив, облако, маршруты и выгода остаются</span></div></div></div><div class="card"><h3>Что открыто сейчас</h3><div class="grid2"><div class="tile" onclick="go('schedule')"><div class="ico">◷</div><b>План и окна</b><span>сегодня, завтра, передача</span></div><div class="tile" onclick="go('map')"><div class="ico">⌖</div><b>Карта</b><span>экскурсионный и свободный</span></div><div class="tile" onclick="go('chat')"><div class="ico">☰</div><b>Чаты</b><span>группа, оператор, гид</span></div><div class="tile" onclick="go('protect')"><div class="ico">☂</div><b>Protect</b><span>дорога, погода, жильё</span></div></div></div>`}
+
+function viewsSchedule(){return`${dayChips()}<div class="card"><div class="row"><h3>План: ${dayNames[currentDay]}</h3><span class="badge green">обновлено 5 мин</span></div>${renderTimeline(currentDay)}</div><div class="grid2"><div class="tile" onclick="openCreateCollab()"><div class="ico">☷</div><b>Создать коллаб</b><span>поездка, поход, трансфер</span></div><div class="tile" onclick="go('store')"><div class="ico">＋</div><b>Добавить услугу</b><span>еда, оператор, гид</span></div><div class="tile" onclick="openQuestion()"><div class="ico">?</div><b>Вопрос гиду</b><span>ожидания, просьбы</span></div><div class="tile" onclick="ok('Расписание отправлено в чат группы')"><div class="ico">↗</div><b>Поделиться планом</b><span>группа, друзья</span></div></div>`}
+
+function viewsMap(){return`<div class="modebar"><button class="${mapMode==='tour'?'on':''}" onclick="mapMode='tour';go('map')">Режим экскурсии</button><button class="${mapMode==='free'?'on':''}" onclick="mapMode='free';go('map')">Свободный режим</button></div><div class="soft"><b>${mapMode==='tour'?'Экскурсионный режим':'Свободный режим'}:</b> ${mapMode==='tour'?'карта показывает группу, маршрут, привалы и точки.':'карта открывает коллабы, маршруты и предложения партнёров.'}</div><div class="mapbox"><div style="position:absolute;left:16px;top:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;z-index:3"><div style="background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:15px;padding:8px 10px;font-size:11px"><b>${mapMode==='tour'?'Маршрут группы':'Свободная карта'}</b><br>${mapMode==='tour'?'Береговая тропа · смотровая':'Локации, коллабы и маршруты'}</div><span class="badge ${mapMode==='tour'?'green':'gold'}">${mapMode==='tour'?'8 человек':'27 на карте'}</span></div>${mapMode==='tour'?`<div class="pin green" style="left:44px;top:240px;z-index:4" onclick="openPoint('today',1)"><i>1</i></div><div class="pin" style="left:130px;top:186px;z-index:4" onclick="openPoint('today',2)"><i>2</i></div><div class="pin gold" style="left:214px;top:154px;z-index:4" onclick="openPoint('today',3)"><i>3</i></div><div class="pin green" style="left:288px;top:148px;z-index:4" onclick="openPoint('today',5)"><i>4</i></div><div class="pin red" style="left:262px;top:224px;z-index:4" onclick="go('protect')"><i>!</i></div>`:`<div class="pin gold" style="left:52px;top:236px;z-index:4"><i>3</i></div><div class="pin green" style="left:130px;top:174px;z-index:4"><i>5</i></div><div class="pin" style="left:214px;top:142px;z-index:4"><i>9</i></div><div class="pin green" style="left:286px;top:96px;z-index:4" onclick="go('routes')"><i>12</i></div>`}</div><div class="card"><h3>${mapMode==='tour'?'Режим экскурсии':'Свободный режим'}</h3><div class="grid2"><div class="tile" onclick="go('handoff')"><div class="ico">⇄</div><b>Передача гиду</b><span>Мария получит состав и пожелания</span></div><div class="tile" onclick="go('protect')"><div class="ico">☂</div><b>Protect</b><span>риск дороги после 18:00</span></div></div></div>`}
+
+function viewsActivities(){return`<div class="card hero"><h3>Активности и туры</h3><p>Быстрый выбор активностей и подбор тура по направлению, формату и классу.</p></div><div class="grid2"><div class="tile" onclick="go('tours')"><div class="ico">▦</div><b>Каталог туров</b><span>направления, форматы, классы</span></div><div class="tile" onclick="openTourBuilder()"><div class="ico">🧩</div><b>Подобрать тур</b><span>по бюджету и интересам</span></div><div class="tile" onclick="openPoint('today',5)"><div class="ico">🌌</div><b>Сияние</b><span>22:10, шанс 62%</span></div><div class="tile" onclick="openPoint('tomorrow',1)"><div class="ico">🐋</div><b>Киты / море</b><span>зависит от погоды</span></div><div class="tile" onclick="service('Морская рыбалка')"><div class="ico">🎣</div><b>Морская рыбалка</b><span>катер, снасти, капитан</span></div><div class="tile" onclick="service('Хибины')"><div class="ico">🏔</div><b>Хибины</b><span>маршрут под группу</span></div></div><div class="card"><h3>Ещё направления</h3><div class="grid2"><div class="tile" onclick="quickTour('river')"><div class="ico">🐟</div><b>Речная рыбалка</b><span>снасти, чай, мягкий темп</span></div><div class="tile" onclick="quickTour('quad')"><div class="ico">🏍</div><b>Квадроциклы Хибины</b><span>инструктор, экипировка</span></div></div></div>`}
+
+function viewsTours(){return`<div class="card hero"><h3>Каталог туров</h3><p>Направление + формат + класс. Так турист понимает не только «куда», но и «как» и «какой уровень сервиса».</p></div><div class="kpi"><div><b>${tourDirections.length}</b><span>направлений</span></div><div><b>${tourFormats.length}</b><span>форматов</span></div><div><b>${tourClasses.length}</b><span>классов</span></div></div><div class="card"><h3>Быстрый подбор</h3><button class="btn" onclick="openTourBuilder()">Собрать тур под меня</button></div>${tourSection('Направления',tourDirections,'direction')}${tourSection('Форматы',tourFormats,'format')}${tourSection('Классы',tourClasses,'class')}`}
+
+function viewsCollabs(){return`<div class="card hero"><h3>Коллабы как сервис</h3><p>Совместная заявка на услугу: трансфер, гида, катер, рыбалку, квадроциклы. Снижает стоимость и попадает в расписание и Protect.</p></div><div class="grid2"><div class="tile" onclick="openCollabDetail('teriberka')"><div class="ico">🚐</div><b>Териберка завтра</b><span>2 места, общий трансфер</span></div><div class="tile" onclick="openCollabDetail('aurora')"><div class="ico">🌌</div><b>Сияние ночью</b><span>3 места, погодное окно</span></div><div class="tile" onclick="openCollabDetail('sea')"><div class="ico">🎣</div><b>Катер / море</b><span>добор группы, Protect</span></div><div class="tile" onclick="openCollabDetail('hibiny')"><div class="ico">🏔</div><b>Хибины с гидом</b><span>по уровню, трансфер</span></div><div class="tile" onclick="openCollabDetail('river')"><div class="ico">🐟</div><b>Речная рыбалка</b><span>снасти, чай, берег</span></div><div class="tile" onclick="openCollabDetail('quad')"><div class="ico">🏍️</div><b>Квадроциклы</b><span>инструктор, экипировка</span></div></div><div class="card"><div class="btnrow"><button class="btn" onclick="openCreateCollab()">Создать коллаб</button><button class="btn secondary" onclick="openCollabRules()">Как работает</button></div></div>`}
+
+function viewsGuides(){return`<div class="card hero"><div class="row"><div><h3>Наши гиды</h3><p>Не «лица для каталога», а люди, на которых держится впечатление, безопасность и смысл поездки.</p></div><span class="badge green">проверенные</span></div></div><div class="card" style="background:linear-gradient(145deg,#ffffff,#f2f7fa)"><div class="row"><div><h3>Текущий гид · Андрей Северцев</h3><p>Береговые маршруты, Териберка, спокойный темп.</p></div><span class="badge dark">ведёт сейчас</span></div><div class="btnrow"><button class="btn secondary" onclick="openGuideProfile('andrey')">Профиль</button><button class="btn secondary" onclick="openGuideRate()">Оценить</button></div></div><div class="card"><h3>Подобрать гида</h3><div class="item"><div class="thumb">🌌</div><div><b>Мария Полярная</b><div class="desc">Сияние, фото-точки, мягкие ночные выезды</div></div><button class="mini-btn" onclick="openGuideProfile('maria')">Открыть</button></div><div class="item"><div class="thumb">🎣</div><div><b>Никита Громов</b><div class="desc">Море, киты, рыбалка, погодные окна</div></div><button class="mini-btn" onclick="openGuideProfile('nikita')">Открыть</button></div><div class="item"><div class="thumb">🏔</div><div><b>Ольга Вершина</b><div class="desc">Хибины, квадроциклы, семейные маршруты</div></div><button class="mini-btn" onclick="openGuideProfile('olga')">Открыть</button></div><div class="item"><div class="thumb">⛺</div><div><b>Сергей Тайга</b><div class="desc">Автономные форматы, дикари, запасные сценарии</div></div><button class="mini-btn" onclick="openGuideProfile('sergey')">Открыть</button></div></div>`}
+
+function viewsHandoff(){return`<div class="notice">Турист видит упрощённую версию. У гида и оператора — полная карточка передачи.</div><div class="card"><h3>Передача · 15:20</h3><div class="kpi"><div><b>8</b><span>участников</span></div><div><b>29–54</b><span>возраст</span></div><div><b>средний</b><span>уровень</span></div></div></div><div class="card"><h3>Состояние группы</h3><p><b>Имена:</b> Алексей, Анна, Ольга, Дмитрий, Ирина, Павел, Светлана, Кирилл.</p><p><b>Здоровье:</b> у 1 болит колено, у 1 — укачивание.</p><p><b>Инвентарь:</b> 6 термосов, 8 дождевиков, аптечка у гида.</p></div><div class="card"><h3>Привалы</h3><div class="timeline"><div class="step done"><b>11:15 · привал</b><span>кофе, самочувствие</span></div><div class="step done"><b>13:05 · привал</b><span>фото, ветер усилился</span></div><div class="step warn"><b>15:20 · передача</b><span>не ускорять темп, точка для фото</span></div></div></div><button class="btn" onclick="openQuestion()">Вопрос новому гиду</button>`}
+
+function viewsChat(){return`<div class="chips"><span class="chip on">Группа</span><span class="chip" onclick="ok('Открыт чат с оператором')">Оператор</span><span class="chip" onclick="ok('Открыт чат гидов')">Гиды</span><span class="chip" onclick="ok('Открыт чат локации')">Локация</span></div><div class="msg"><b>Оператор SREDA</b><div>Мария получит группу в 15:20. Пожелания — сюда.</div></div><div class="msg me"><b>Вы</b><div>Хотим меньше подъёмов и больше фото у берега.</div></div><div class="msg"><b>Гид Андрей</b><div>Принял. Сделаем короткую фототочку до передачи.</div></div><div class="msg"><b>Мария · новый гид</b><div>Вижу состояние группы и инвентарь. Подготовлю спокойный маршрут.</div></div><div class="btnrow"><button class="btn secondary" onclick="ok('Оператор получил сигнал')">Нужна помощь</button><button class="btn secondary" onclick="openQuestion()">Вопрос гиду</button></div>`}
+
+function viewsProtect(){return`<div class="card hero"><div class="row"><div><h3>Arctic Protect</h3><p>Центр защиты поездки: оператор, партнёры, запасные сценарии, жильё, транспорт и страховой партнёр.</p></div><span class="status-pill" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.28)">активен</span></div></div><div class="kpi"><div><b>до 15 000 ₽</b><span>сервисный лимит</span></div><div><b>7 мин</b><span>средний ответ</span></div><div><b>3</b><span>сценария готовы</span></div></div><div class="card"><div class="row"><h3>Текущие риски</h3><span class="badge gold">live</span></div><div class="item"><div class="thumb">🚧</div><div><b>Дорога в Териберку</b><div class="desc">Риск ограничений после 18:00. Запасной маршрут готов.</div></div><button class="mini-btn" onclick="ok('Protect: дорога. Оператор отслеживает.')">Открыть</button></div><div class="item"><div class="thumb">🌌</div><div><b>Северное сияние</b><div class="desc">Шанс 62%, облачность меняется.</div></div><button class="mini-btn" onclick="ok('Protect: сияние. Повторный сценарий зарезервирован.')">Открыть</button></div></div><div class="card"><h3>Открыть обращение</h3><div class="chips"><span class="chip on">Погода</span><span class="chip">Дорога</span><span class="chip">Жильё</span><span class="chip">Тур</span><span class="chip">Здоровье</span></div><textarea placeholder="Опишите ситуацию коротко"></textarea><div class="btnrow"><button class="btn" onclick="ok('Protect-обращение создано')">Создать кейс</button><button class="btn secondary" onclick="go('chat')">Написать оператору</button></div></div>`}
+
+function viewsBooking(){return`<div class="card hero"><h3>Жильё</h3><p>Квартиры, апартаменты, базы, другой регион через партнёров.</p></div><div class="card"><h3>Варианты</h3><div class="item"><div class="thumb">🏠</div><div><b>Апартаменты у центра</b><div class="desc">2–4 гостя, рядом кафе</div></div><button class="mini-btn" onclick="service('Апартаменты')">Выбрать</button></div><div class="item"><div class="thumb">👨‍👩‍👧</div><div><b>Семейная квартира</b><div class="desc">кухня, тихий двор</div></div><button class="mini-btn" onclick="service('Семейная квартира')">Выбрать</button></div><div class="item"><div class="thumb">🏔</div><div><b>База в Хибинах</b><div class="desc">активности, трансфер</div></div><button class="mini-btn" onclick="service('База в Хибинах')">Выбрать</button></div><div class="item"><div class="thumb">🌊</div><div><b>Дом у воды · Териберка</b><div class="desc">видовая локация</div></div><button class="mini-btn" onclick="service('Дом у воды')">Выбрать</button></div></div>`}
+
+function viewsStore(){return`<div class="card hero"><h3>Маркет</h3><p>Еда, гиды, трансферы, инвентарь, развлечения.</p></div><div class="card"><div class="item"><div class="thumb">🧭</div><div><b>Личный гид</b><div class="desc">индивидуальная программа</div></div><button class="mini-btn" onclick="service('Личный гид')">Заказать</button></div><div class="item"><div class="thumb">📷</div><div><b>Фото / видео / дрон</b><div class="desc">фото, AI-фильм</div></div><button class="mini-btn" onclick="service('Фото')">Заказать</button></div><div class="item"><div class="thumb">🍲</div><div><b>Горячая еда</b><div class="desc">с учётом пожеланий</div></div><button class="mini-btn" onclick="service('Горячая еда')">Заказать</button></div><div class="item"><div class="thumb">🎒</div><div><b>Инвентарь</b><div class="desc">палки, дождевик, термос</div></div><button class="mini-btn" onclick="service('Инвентарь')">Заказать</button></div><div class="item"><div class="thumb">🚐</div><div><b>Трансфер</b><div class="desc">индивидуально или коллаб</div></div><button class="mini-btn" onclick="service('Трансфер')">Заказать</button></div></div><button class="btn" onclick="ok('Оператор подберёт услуги под ваш план')">Подобрать под меня</button>`}
+
+function viewsQuests(){return`<div class="card hero"><h3>Квест «Собери Север»</h3><p>Фотографируйте точки, улучшайте маршруты и получайте призы.</p></div><div class="card"><div class="row"><h3>Точки маршрута</h3><span class="small">6/14</span></div><div class="progress"><i style="width:43%"></i></div></div><div class="grid2"><div class="tile" onclick="service('Новая точка')"><div class="ico">📍</div><b>Новая точка</b><span>+500 бонусов</span></div><div class="tile" onclick="service('Лучшее фото')"><div class="ico">📸</div><b>Лучшее фото</b><span>рейтинг недели</span></div><div class="tile" onclick="service('QR-доска')"><div class="ico">▣</div><b>QR-доска</b><span>вклад в инфодоску</span></div><div class="tile" onclick="service('AI-экран')"><div class="ico">🎞</div><b>AI-экран</b><span>лучшие моменты</span></div></div>`}
+
+function viewsRoutes(){return`<div class="card hero"><h3>Маршруты как актив</h3><p>Туристы, гиды и авторы создают маршруты, получают оценки и бонусы.</p></div><div class="card"><h3>Маршруты пользователей</h3><div class="item"><div class="thumb">🗺</div><div><b>Териберка без толпы</b><div class="desc">автор: Анна · 4.9 · 28 прохождений</div></div><button class="mini-btn" onclick="ok('Маршрут добавлен в план')">Взять</button></div><div class="item"><div class="thumb">🌌</div><div><b>Сияние за 1 ночь</b><div class="desc">автор: Игорь · форк v3</div></div><button class="mini-btn" onclick="ok('Бонус автору отправлен')">Бонус</button></div><div class="item"><div class="thumb">🏔</div><div><b>Лёгкие Хибины</b><div class="desc">без перегруза, фото-точки</div></div><button class="mini-btn" onclick="ok('Маршрут добавлен в план')">Взять</button></div></div>`}
+
+function viewsRef(){return`<div class="card hero"><h3>Рефералка и заработок</h3><p>Делитесь маршрутами, турами, жильём. Друзья бронируют — вы получаете бонус.</p></div><div class="kpi"><div><b>12</b><span>переходов</span></div><div><b>3</b><span>брони</span></div><div><b>${fmt(5750)}</b><span>к выплате</span></div></div><div class="card"><div class="btnrow"><button class="btn" onclick="ok('Реферальная ссылка скопирована')">Скопировать ссылку</button><button class="btn secondary" onclick="go('finance')">Моя выгода</button></div></div>`}
+
+function viewsCloud(){return`<div class="card"><h3>Личный архив</h3><p>После вылета останутся фото, видео, маршруты, бонусы и AI-фильм путешествия.</p></div><div class="grid2"><div class="tile" onclick="service('Облако')"><div class="ico">☁</div><b>Облако</b><span>182 фото, 14 видео</span></div><div class="tile" onclick="service('AI-фильм')"><div class="ico">🎞</div><b>AI-фильм</b><span>яркие моменты</span></div><div class="tile" onclick="service('До / После')"><div class="ico">◐</div><b>До / После</b><span>сравнение поездок</span></div><div class="tile" onclick="go('ref')"><div class="ico">↗</div><b>Поделиться</b><span>друзья и кэшбек</span></div></div>`}
+
+function viewsProfile(){return`<div class="card"><h3>Профиль и приватность</h3><div class="privacy"><div class="row"><div><b>Личный профиль скрыт</b><div class="small">видят только имя или ник</div></div><div class="switch on"></div></div><div class="row"><div><b>Здоровье только гиду и оператору</b><div class="small">не показывается участникам</div></div><div class="switch on"></div></div><div class="row"><div><b>Фото в ленту после согласия</b><div class="small">можно отключить AI-экраны</div></div><div class="switch"></div></div></div></div><div class="card"><h3>Данные туриста</h3><input value="Алексей, 34"><select><option>Уровень: средний</option><option>Новичок</option><option>Уверенный</option></select><textarea>Здоровье: без серьёзных ограничений. Просьба избегать долгих крутых подъёмов.</textarea><button class="btn" onclick="ok('Профиль обновлён')">Сохранить</button></div><div class="card"><h3>Цели поездки</h3><div class="goal done"><div class="check">✓</div><div><b>Первая точка маршрута</b></div></div><div class="goal done"><div class="check">✓</div><div><b>Фото в ключевой локации</b></div></div><div class="goal"><div class="check">3</div><div><b>Северное сияние</b><div class="small">ожидается вечером</div></div></div></div>`}
+
+function viewsFinance(){return`<div class="card hero"><h3>Финансы и выгода</h3><p>Не только траты, но и польза: сколько сэкономил и какой эмоциональный результат получил.</p></div><div class="kpi"><div><b>${fmt(28400)}</b><span>потратили</span></div><div><b>${fmt(9600)}</b><span>сэкономили</span></div><div><b>${fmt(5750)}</b><span>заработали</span></div></div><div class="card"><div class="row"><h3>Индекс эмоций</h3><span class="badge green">86/100</span></div><div class="progress"><i style="width:86%"></i></div></div><div class="card"><h3>Расходы</h3><div class="item"><div class="thumb">🏠</div><div><b>Жильё</b><div class="desc">3 ночи + Protect</div></div><div class="price">12 900</div></div><div class="item"><div class="thumb">☄</div><div><b>Туры</b><div class="desc">сияние, Хибины, рыбалка</div></div><div class="price">9 800</div></div><div class="item"><div class="thumb">🚐</div><div><b>Трансферы</b><div class="desc">часть через коллабы</div></div><div class="price">3 600</div></div><div class="item"><div class="thumb">🍲</div><div><b>Еда и маркет</b></div><div class="price">2 100</div></div></div>`}
+
+function viewsAdventures(){return`<div class="card hero"><h3>Среда приключений</h3><p>Серия челленджей: выдернуть из рутины, отправить на Север и показать, как человек проходит маршрут и меняет обстановку.</p></div><div class="kpi"><div><b>3</b><span>героя сезона</span></div><div><b>7</b><span>испытаний</span></div><div><b>92/100</b><span>индекс эмоций</span></div></div><div class="card"><h3>Маршрут героя</h3><div class="timeline"><div class="step done"><b>1. Герой из города</b><span>офис, усталость, рутина</span></div><div class="step"><b>2. Вызов: Север</b><span>прилёт, Travel Pass, маршрут, гид</span></div><div class="step"><b>3. Испытание средой</b><span>дорога, ветер, океан, горы</span></div><div class="step warn"><b>4. Осознание и финал</b><span>что изменилось, что забирает с собой</span></div></div></div><div class="card"><div class="btnrow"><button class="btn" onclick="ok('Заявка героя выпуска отправлена')">Стать героем</button><button class="btn secondary" onclick="go('finance')">Мой результат</button></div></div>`}
+
+function viewsMenu(){return`<div class="card hero"><h3>Все разделы</h3><p>Полный список разделов туристического приложения SREDA Arctic.</p></div><div class="grid2">${screens.filter(s=>s.id!=='menu').map(s=>`<div class="tile" onclick="go('${s.id}')"><div class="ico">${s.icon}</div><b>${s.name}</b><span>${s.sub}</span></div>`).join('')}</div>`}
+
+const views={home:viewsHome,pass:viewsPass,schedule:viewsSchedule,map:viewsMap,activities:viewsActivities,tours:viewsTours,collabs:viewsCollabs,guides:viewsGuides,handoff:viewsHandoff,chat:viewsChat,protect:viewsProtect,finance:viewsFinance,booking:viewsBooking,store:viewsStore,quests:viewsQuests,routes:viewsRoutes,ref:viewsRef,cloud:viewsCloud,adventures:viewsAdventures,profile:viewsProfile,menu:viewsMenu};
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+go('home');
+</script>
+</body>
+</html>
